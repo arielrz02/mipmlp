@@ -1,8 +1,6 @@
-FROM python:3.7.2-alpine3.9
+FROM python:3.8-slim-buster
 
-RUN apk add --no-cache python3-dev libstdc++ && \
-    apk add --no-cache g++ && \
-    ln -s /usr/include/locale.h /usr/include/xlocale.h
+RUN apt-get update && apt-get install -y python3 python3-pip
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY . /app
