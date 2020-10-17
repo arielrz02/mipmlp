@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>MIP-MLP</h1>
+<section class="content">
+  <form method="post"  enctype=multipart/form-data>
+    {% macro build_option(name, selected_att) -%}
+    {% if name == selected_att %}
+      <option value="{{ name }}" selected="selected">{{name}}</option>
+    {% else %}
+      <option value="{{ name }}">{{name}}</option>
+    {% endif %}
+    {%- endmacro %}
+
+    <div>
+      <label for="otu_file">Select OTU file:</label>
+      <input type=file id="otu_file" name="otu_file">
+    </div>
+
+    <br>
+
+    <div>
+      <label for="tag_file">Select Tag file:</label>
+      <input type=file id="tag_file" name="tag_file">
+    </div>
+
+    <br>
+
+    <div>
+      <label for="taxonomy_level">Taxonomy Level</label>
+      <select name="taxonomy_level" id="taxonomy_level">
+        {{ build_option('4', taxonomy_level) }}
+        {{ build_option('5', taxonomy_level) }}
+        {{ build_option('6', taxonomy_level) }}
+        {{ build_option('7', taxonomy_level) }}
+      </select>
+    </div>
+
+    <br>
+
+    <div>
+      <label for="taxnomy_group">Taxnomy Group</label>
+      <select name="taxnomy_group" id="taxnomy_group">
+        {{ build_option('sub PCA', taxnomy_group) }}
+        {{ build_option('mean', taxnomy_group) }}
+        {{ build_option('sum', taxnomy_group) }}
+      </select>
+    </div>
+
+    <br>
+
+    <div>
+      <label for="epsilon">Epsilon</label>
+      <input type="number" min="0" max="1" step="any" name="epsilon" id="epsilon" value="{{ epsilon }}">
+    </div>
+
+    <br>
+
+    <div>
+      <label for="z_scoring">Z Scoring</label>
+      <select name="z_scoring" id="z_scoring">
+        {{ build_option('row', z_scoring) }}
+        {{ build_option('column', z_scoring) }}
+        {{ build_option('both', z_scoring) }}
+      </select>
+    </div>
+
+    <br>
+
+    <div>
+      <label for="PCA">PCA</label>
+      <select name="PCA" id="PCA">
+        {{ build_option('0', PCA) }}
+        {{ build_option('1', PCA) }}
+      </select>
+    </div>
+
+    <br>
+
+    <div>
+      <label for="normalization">Normalization</label>
+      <select name="normalization" id="normalization">
+        {{ build_option('log', normalization) }}
+        {{ build_option('relative', normalization) }}
+      </select>
+    </div>
+
+    <br>
+
+    <div>
+      <label for="norm_after_rel">Norm After Rel</label>
+      <select name="norm_after_rel" id="norm_after_rel">
+        {{ build_option('No', norm_after_rel) }}
+        {{ build_option('relative', norm_after_rel) }}
+      </select>
+    </div>
+
+
+    {% for message in get_flashed_messages() %}
+    {% if message != None %}
+    <p style="color: red">{{ message }}</p>
+    {% endif %}
+    {% endfor %}
+
+    <br>
+
+    <input type="submit" value="calculate">
+  </form>
+
+  <style>
+  * {
+    box-sizing: border-box;
+  }
+
+  .column {
+    float: left;
+    width: 33.33%;
+    padding: 5px;
+  }
+
+  /* Clearfix (clear floats) */
+  .row::after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+  </style>
+
+
+
+  {% if images_names is defined %}
+  <br>
+  <button>
+        <a href="/download-outputs">download</a>
+  </button>
+  <br>
+  <body>
+    <div class="row">
+      <div class="column">
+        <img src="{{ images_names[0] }}" style="width:100%">
+      </div>
+      <div class="column">
+        <img src="{{ images_names[1] }}" style="width:100%">
+      </div>
+      <div class="column">
+        <img src="{{ images_names[2] }}" style="width:100%">
+      </div>
+    </div>
+    <div class="row">
+      <div class="column">
+        <img src="{{ images_names[3] }}" style="width:100%">
+      </div>
+      <div class="column">
+        <img src="{{ images_names[6] }}" style="width:100%">
+      </div>
+      <div class="column">
+        <img src="{{ images_names[5] }}" style="width:100%">
+      </div>
+    </div>
+    <div class="row">
+      <div class="column">
+        <img src="{{ images_names[4] }}" style="width:100%" class="center">
+      </div>
+
+    </div>
+  </body>
+  {% endif %}
+
+</section>
+
+{% endblock %}
