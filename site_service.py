@@ -41,7 +41,7 @@ def home_page():
                     filePath = os.path.join(folderName, filename)
                     # Add file to zip
                     zipObj.write(filePath, basename(filePath))
-            for folderName, subfolders, filenames in os.walk("preprocess_plots"):
+            for folderName, subfolders, filenames in os.walk("static"):
                 for filename in filenames:
                     # create complete filepath of file in directory
                     filePath = os.path.join(folderName, filename)
