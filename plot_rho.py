@@ -52,7 +52,8 @@ def draw_component_rhos_calculation_figure(bact_df, tag_df, task_name="prognosis
     ax.bar(x_pos, real_rhos, color=coeff_color)
     ax.set_ylim(-1, 1)
     ax.set_xticks(x_pos)
-    ax.set_xticklabels(range(1, len(components_df.columns + 1)))
+    empty_string_labels = [''] * len(x_pos)
+    ax.set_xticklabels(empty_string_labels)
     plt.xticks(fontsize=8)
     plt.title("Correlation between each component and the label\n" + task_name + " task")
     ax.set_xlabel("spearman correlation")
@@ -445,4 +446,3 @@ def draw_dynamics_rhos_calculation_figure(preproccessed_data, title, tri_to_tri,
         if save_folder:
             plt.savefig(join(save_folder, "pos_neg_correlation_at_" + title + ".png"))
         plt.close()
-
