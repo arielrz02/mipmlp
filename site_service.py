@@ -83,7 +83,8 @@ def home_page():
                                    norm_after_rel=norm_after_rel,
                                    images_names=images_names)
 
-    return render_template('home.html', active='Home')
+    return render_template('home.html', active='Home', taxonomy_level='Specie',
+                                   taxnomy_group='Sub-PCA', PCA='None')
 
 
 @bp.route('/Help')
@@ -111,7 +112,7 @@ def params_dict(taxonomy_level, taxnomy_group, epsilon, z_scoring, pca, comp, no
     taxonomy_group_dict = {"Sub-PCA": 'sub PCA', "Mean": 'mean', "Sum": 'sum'}
     z_scoring_dict = {"Row": 'row', "Column": 'col', "Both": 'both', "None": 'No'}
     normalization_dict = {"Log": 'log', "Relative": 'relative'}
-    norm_after_rel_dict = {"No": 'No', "Relative": 'z_after_relative'}
+    norm_after_rel_dict = {"No": 'No', "Yes": 'z_after_relative'}
     dimension_reduction_dict = {"PCA": (comp, 'PCA'), "ICA": (comp, 'ICA'), "None": (0, 'PCA')}
     params = {
         'taxonomy_level': taxonomy_level_dict[taxonomy_level],
