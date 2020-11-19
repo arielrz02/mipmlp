@@ -30,11 +30,13 @@ def home_page():
             error = "The number of components should be -1 or positive integer (not 0)."
         else:
             otu_file.save("OTU.csv")
+            tag_flag = True
             if tag_file:
+                tag_flag = False
                 tag_file.save("TAG.csv")
             params = params_dict(taxonomy_level, taxnomy_group, epsilon, z_scoring, PCA, int(comp), normalization,
                                  norm_after_rel)
-            service.evaluate(params)
+            service.evaluate(params, tag_flag)
 
             # create a ZipFile object
             with ZipFile('sampleDir.zip', 'w') as zipObj:
@@ -53,13 +55,22 @@ def home_page():
                         zipObj.write(filePath, basename(filePath))
 
             images_names = [
-                'static/Correlation_between_each_component_and_the_labelprognosistask.svg',
                 'static/correlation_heatmap_bacteria.png',
                 'static/correlation_heatmap_patient.png',
                 'static/density_of_samples.svg',
-                'static/samples_variance.svg',
-                'static/standard_heatmap.png'
+                'static/standard_heatmap.png',
+                'static/samples_variance.svg'
             ]
+
+            if not tag_flag:
+                images_names.insert(0, 'static/Correlation_between_each_component_and_the_labelprognosistask.svg')
+
+            try:
+                os.remove("TAG.csv")
+            except:
+                print("Error")
+            finally:
+                pass
 
         # input validation
 

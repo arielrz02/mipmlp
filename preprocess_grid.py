@@ -13,7 +13,7 @@ from sklearn.decomposition import PCA
 from sklearn.decomposition import FastICA
 
 
-def preprocess_data(data, dict_params, map_file, visualize_data=False):
+def preprocess_data(data, dict_params, map_file=None, visualize_data=False):
     taxnomy_level = int(dict_params['taxonomy_level'])
     preform_taxnomy_group = dict_params['taxnomy_group']
     eps_for_zeros = float(dict_params['epsilon'])
@@ -158,7 +158,7 @@ def preprocess_data(data, dict_params, map_file, visualize_data=False):
                                              preproccessed_data=as_data_frame, mapping_file=map_file)
         as_data_frame_b_pca = as_data_frame
 
-    if visualize_data:
+    if visualize_data and map_file is not None:
         draw_component_rhos_calculation_figure(as_data_frame, map_file, save_folder=folder)
 
     if pca[0] != 0:

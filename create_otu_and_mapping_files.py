@@ -11,20 +11,21 @@ from plot_3D_pca import PCA_t_test, plot_data_3d, plot_data_2d
 
 class CreateOtuAndMappingFiles(object):
     # get two relative path of csv files
-    def __init__(self, otu_file_path, tags_file_path):
+    def __init__(self, otu_file_path, tags_file_path=None):
         self.otu_path = otu_file_path
         self.tags_path = tags_file_path
-        print('read tag file...')
-        mapping_table = pd.read_csv(self.tags_path)
-        self.extra_features_df = mapping_table.drop(['Tag'], axis=1).copy()
-        self.tags_df = mapping_table[['ID', 'Tag']].copy()
-        # set index as ID
-        self.tags_df = self.tags_df.set_index('ID')
-        self.tags_df.index = self.tags_df.index.astype(str)
-        self.extra_features_df = self.extra_features_df.set_index('ID')
-        # subset of ids according to the tags data frame
-        self.ids = self.tags_df.index.tolist()
-        self.ids.append('taxonomy')
+        if tags_file_path:
+            print('read tag file...')
+            mapping_table = pd.read_csv(self.tags_path)
+            self.extra_features_df = mapping_table.drop(['Tag'], axis=1).copy()
+            self.tags_df = mapping_table[['ID', 'Tag']].copy()
+            # set index as ID
+            self.tags_df = self.tags_df.set_index('ID')
+            self.tags_df.index = self.tags_df.index.astype(str)
+            self.extra_features_df = self.extra_features_df.set_index('ID')
+            # subset of ids according to the tags data frame
+            self.ids = self.tags_df.index.tolist()
+            self.ids.append('taxonomy')
         print('read otu file...')
         self.otu_features_df = pd.read_csv(self.otu_path).drop('Unnamed: 0', axis=1,errors='ignore')
         self.otu_features_df = self.otu_features_df.set_index('ID')
@@ -33,35 +34,51 @@ class CreateOtuAndMappingFiles(object):
         self.pca_comp = None
 
     def csv_to_learn(self, task_name, folder, tax):
-        tag_ids = list(self.tags_df.index)
-        otu_ids = list(self.otu_features_df_b_pca.index)
-        mutual_ids = list(set(tag_ids).intersection(set(otu_ids)))
-        # use only the samples the correspond to the tag file
-        self.otu_features_df = self.otu_features_df.loc[mutual_ids]
-        self.tags_df = self.tags_df.loc[mutual_ids]
-        # concat with extra features by index
-        df = self.otu_features_df.join(self.extra_features_df)
-        # create a new csv file
-        otu_path = os.path.join(folder, 'OTU_merged_' + str(task_name) + '.csv')
-        df.to_csv(otu_path)
-        tag_path = os.path.join(folder, 'Tag_file_' + str(task_name) + '.csv')
-        self.tags_df.to_csv(tag_path)
-        if self.pca_ocj:
-            pca_path = os.path.join(folder, "Pca_obj_" + str(task_name) + '.pkl')
-            pickle.dump(self.pca_ocj, open(pca_path, "wb"))
+        if self.tags_path:
+            tag_ids = list(self.tags_df.index)
+            otu_ids = list(self.otu_features_df_b_pca.index)
+            mutual_ids = list(set(tag_ids).intersection(set(otu_ids)))
+            # use only the samples the correspond to the tag file
+            self.otu_features_df = self.otu_features_df.loc[mutual_ids]
+            self.tags_df = self.tags_df.loc[mutual_ids]
+            # concat with extra features by index
+            df = self.otu_features_df.join(self.extra_features_df)
+            # create a new csv file
+            otu_path = os.path.join(folder, 'OTU_merged_' + str(task_name) + '.csv')
+            df.to_csv(otu_path)
+            tag_path = os.path.join(folder, 'Tag_file_' + str(task_name) + '.csv')
+            self.tags_df.to_csv(tag_path)
+            if self.pca_ocj:
+                pca_path = os.path.join(folder, "Pca_obj_" + str(task_name) + '.pkl')
+                pickle.dump(self.pca_ocj, open(pca_path, "wb"))
+            else:
+                pca_path = "No pca created"
+            with open(os.path.join(folder, "bacteria_tax_level_" + str(tax) + ".txt"), "w") as bact_file:
+                for col in self.bacteria:
+                    bact_file.write(str(col) + "\n")
+            return otu_path, tag_path, pca_path
         else:
-            pca_path = "No pca created"
-        with open(os.path.join(folder, "bacteria_tax_level_" + str(tax) + ".txt"), "w") as bact_file:
-            for col in self.bacteria:
-                bact_file.write(str(col) + "\n")
-        return otu_path, tag_path, pca_path
+            otu_path = os.path.join(folder, 'OTU_merged_' + str(task_name) + '.csv')
+            self.otu_features_df.to_csv(otu_path)
+            if self.pca_ocj:
+                pca_path = os.path.join(folder, "Pca_obj_" + str(task_name) + '.pkl')
+                pickle.dump(self.pca_ocj, open(pca_path, "wb"))
+            else:
+                pca_path = "No pca created"
+            with open(os.path.join(folder, "bacteria_tax_level_" + str(tax) + ".txt"), "w") as bact_file:
+                for col in self.bacteria:
+                    bact_file.write(str(col) + "\n")
+            return otu_path, pca_path
 
     def preprocess(self, preprocess_params, visualize):
         # print('preprocess...')
         taxnomy_level = int(preprocess_params['taxonomy_level'])
-
-        self.otu_features_df, self.otu_features_df_b_pca, self.pca_ocj, self.bacteria, self.pca_comp = preprocess_data(
-            self.otu_features_df, preprocess_params, self.tags_df, visualize_data=visualize)
+        if self.tags_path:
+            self.otu_features_df, self.otu_features_df_b_pca, self.pca_ocj, self.bacteria, self.pca_comp = preprocess_data(
+                self.otu_features_df, preprocess_params, self.tags_df, visualize_data=visualize)
+        else:
+            self.otu_features_df, self.otu_features_df_b_pca, self.pca_ocj, self.bacteria, self.pca_comp = preprocess_data(
+                self.otu_features_df, preprocess_params, map_file=None, visualize_data=visualize)
         # otu_features_df is the processed data, before pca
         if int(preprocess_params['pca'][0]) == 0:
             self.otu_features_df = self.otu_features_df_b_pca
