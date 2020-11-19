@@ -1,17 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>Explanation:</h1>
     <section class="content">
       <header>
-        <p>...</p>
-      </header>
-    </section>
-
-  <h1>How to use:</h1>
-    <section class="content">
-      <header>
-        <p>...</p>
+        <p>MIP-MLP is preprocessing tool for 16S values.</p>
+        <p>The input file should contain detailed unormalized OTU/Feature values, and the appopriate taxonomy as a csv file,</p>
+        <p>and a possible tag file, with the class of each sample.</p>
+        <p>The tag file is not used for the preprocessing, but is used to provide some statistics on the relation between the features and the class.</p>
+        <p>One can run MIP-MLP even without a tag file.</p>
       </header>
     </section>
 {% endblock %}

@@ -14,14 +14,20 @@
 
     <div>
       <label for="otu_file">Select OTU file:</label>
-      <input type=file id="otu_file" name="otu_file">
+      <input type=file id="otu_file" name="otu_file" value="{{otu_file}}">
     </div>
+
+    {% for message in get_flashed_messages() %}
+    {% if message == "OTU File should be provided." %}
+    <p style="color: red">{{ message }}</p>
+    {% endif %}
+    {% endfor %}
 
     <br>
 
     <div>
       <label for="tag_file">Select Tag file:</label>
-      <input type=file id="tag_file" name="tag_file">
+      <input type=file id="tag_file" name="tag_file" value="{{tag_file}}">
     </div>
 
     <br>
@@ -29,10 +35,10 @@
     <div>
       <label for="taxonomy_level">Taxonomy Level</label>
       <select name="taxonomy_level" id="taxonomy_level">
-        {{ build_option('4', taxonomy_level) }}
-        {{ build_option('5', taxonomy_level) }}
-        {{ build_option('6', taxonomy_level) }}
-        {{ build_option('7', taxonomy_level) }}
+        {{ build_option('Order', taxonomy_level) }}
+        {{ build_option('Family', taxonomy_level) }}
+        {{ build_option('Genus', taxonomy_level) }}
+        {{ build_option('Specie', taxonomy_level) }}
       </select>
     </div>
 
@@ -41,9 +47,9 @@
     <div>
       <label for="taxnomy_group">Taxnomy Group</label>
       <select name="taxnomy_group" id="taxnomy_group">
-        {{ build_option('sub PCA', taxnomy_group) }}
-        {{ build_option('mean', taxnomy_group) }}
-        {{ build_option('sum', taxnomy_group) }}
+        {{ build_option('Mean', taxnomy_group) }}
+        {{ build_option('Sum', taxnomy_group) }}
+        {{ build_option('Sub-PCA', taxnomy_group) }}
       </select>
     </div>
 
@@ -51,56 +57,66 @@
 
     <div>
       <label for="epsilon">Epsilon</label>
-      <input type="number" min="0" max="1" step="any" name="epsilon" id="epsilon" value="{{ epsilon }}">
+      {% if epsilon is not defined %}
+        {% set epsilon = 0.1 %}
+      {% endif %}
+      <input type="number" min="0" max="1" step="any" name="epsilon" id="epsilon" value="{{epsilon}}">
+
     </div>
 
     <br>
 
     <div>
-      <label for="z_scoring">Z Scoring</label>
+      <label for="z_scoring">Z Scoring following Log normalization</label>
       <select name="z_scoring" id="z_scoring">
-        {{ build_option('row', z_scoring) }}
-        {{ build_option('column', z_scoring) }}
-        {{ build_option('both', z_scoring) }}
+        {{ build_option('Row', z_scoring) }}
+        {{ build_option('Column', z_scoring) }}
+        {{ build_option('Both', z_scoring) }}
+        {{ build_option('None', z_scoring) }}
       </select>
     </div>
 
     <br>
 
     <div>
-      <label for="PCA">PCA</label>
+      <label for="PCA">Dimension reduction</label>
       <select name="PCA" id="PCA">
-        {{ build_option('0', PCA) }}
-        {{ build_option('1', PCA) }}
+        {{ build_option('PCA', PCA) }}
+        {{ build_option('ICA', PCA) }}
+        {{ build_option('None', PCA) }}
       </select>
+      <label for="comp">Number of components</label>
+      {% if comp is not defined %}
+        {% set comp = 1 %}
+      {% endif %}
+      <input type="number" id="comp" name="comp" min="-1" step="1" value="{{comp}}" required>
     </div>
+
+    {% for message in get_flashed_messages() %}
+    {% if message == "The number of components should be -1 or positive integer (not 0)." %}
+    <p style="color: red">{{ message }}</p>
+    {% endif %}
+    {% endfor %}
 
     <br>
 
     <div>
       <label for="normalization">Normalization</label>
       <select name="normalization" id="normalization">
-        {{ build_option('log', normalization) }}
-        {{ build_option('relative', normalization) }}
+        {{ build_option('Log', normalization) }}
+        {{ build_option('Relative', normalization) }}
       </select>
     </div>
 
     <br>
 
     <div>
-      <label for="norm_after_rel">Norm After Rel</label>
+      <label for="norm_after_rel">Z Scoring following relative frequency</label>
       <select name="norm_after_rel" id="norm_after_rel">
         {{ build_option('No', norm_after_rel) }}
-        {{ build_option('relative', norm_after_rel) }}
+        {{ build_option('Relative', norm_after_rel) }}
       </select>
     </div>
-
-
-    {% for message in get_flashed_messages() %}
-    {% if message != None %}
-    <p style="color: red">{{ message }}</p>
-    {% endif %}
-    {% endfor %}
 
     <br>
 
@@ -151,17 +167,11 @@
         <img src="{{ images_names[3] }}" style="width:100%">
       </div>
       <div class="column">
-        <img src="{{ images_names[6] }}" style="width:100%">
-      </div>
-      <div class="column">
         <img src="{{ images_names[5] }}" style="width:100%">
       </div>
-    </div>
-    <div class="row">
       <div class="column">
-        <img src="{{ images_names[4] }}" style="width:100%" class="center">
+        <img src="{{ images_names[4] }}" style="width:100%">
       </div>
-
     </div>
   </body>
   {% endif %}

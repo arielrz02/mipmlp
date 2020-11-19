@@ -17,8 +17,9 @@ normalization: log, relative , norm_after_rel: No, relative
 
 def evaluate(params):
     mapping_file = CreateOtuAndMappingFiles("OTU.csv", "TAG.csv")
-    mapping_file.preprocess(preprocess_params=preprocess_prms, visualize=True)
-    # mapping_file.rhos_and_pca_calculation(main_task, preprocess_prms['taxonomy_level'], preprocess_prms['pca'], rhos_folder, pca_folder)
+    mapping_file.preprocess(preprocess_params=params, visualize=True)
+    # mapping_file.rhos_and_pca_calculation(main_task, preprocess_prms['taxonomy_level'], preprocess_prms['pca'],
+    # rhos_folder, pca_folder)
     otu_path, mapping_path, pca_path = mapping_file.csv_to_learn("Mucositis", os.path.join(os.getcwd(), "Mucositis"),
                                                                  preprocess_prms['taxonomy_level'])
     print('CSV files are ready after MIPMLP')
