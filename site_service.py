@@ -58,7 +58,7 @@ def home_page():
                 'static/correlation_heatmap_patient.png',
                 'static/density_of_samples.svg',
                 'static/samples_variance.svg',
-                'static/standart_heatmap.png'
+                'static/standard_heatmap.png'
             ]
 
         # input validation
