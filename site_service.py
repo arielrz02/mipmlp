@@ -53,10 +53,12 @@ def home_page():
                         zipObj.write(filePath, basename(filePath))
                 for folderName, subfolders, filenames in os.walk("static"):
                     for filename in filenames:
-                        # create complete filepath of file in directory
-                        filePath = os.path.join(folderName, filename)
-                        # Add file to zip
-                        zipObj.write(filePath, basename(filePath))
+                        if not (filename == "example_input_files.zip" or filename == "Example_input_options.png"
+                                or filename == "plots_example1.png" or filename == "plots_example2.png"):
+                            # create complete filepath of file in directory
+                            filePath = os.path.join(folderName, filename)
+                            # Add file to zip
+                            zipObj.write(filePath, basename(filePath))
 
             images_names = [
                 'static/correlation_heatmap_bacteria.png',
@@ -72,6 +74,7 @@ def home_page():
 
             try:
                 os.remove("TAG.csv")
+                os.remove("static/Correlation_between_each_component_and_the_labelprognosistask.svg")
             except:
                 print("Error")
             finally:
