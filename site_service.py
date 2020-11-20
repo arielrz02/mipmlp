@@ -36,7 +36,11 @@ def home_page():
                 tag_file.save("TAG.csv")
             params = params_dict(taxonomy_level, taxnomy_group, epsilon, z_scoring, PCA, int(comp), normalization,
                                  norm_after_rel)
+
+
             service.evaluate(params, tag_flag)
+
+
 
             # create a ZipFile object
             with ZipFile('sampleDir.zip', 'w') as zipObj:
@@ -57,13 +61,14 @@ def home_page():
             images_names = [
                 'static/correlation_heatmap_bacteria.png',
                 'static/correlation_heatmap_patient.png',
-                'static/density_of_samples.svg',
                 'static/standard_heatmap.png',
-                'static/samples_variance.svg'
+                'static/samples_variance.svg',
+                'static/density_of_samples.svg'
+
             ]
 
             if not tag_flag:
-                images_names.insert(0, 'static/Correlation_between_each_component_and_the_labelprognosistask.svg')
+                images_names.append('static/Correlation_between_each_component_and_the_labelprognosistask.svg')
 
             try:
                 os.remove("TAG.csv")
@@ -84,7 +89,7 @@ def home_page():
                                    images_names=images_names)
 
     return render_template('home.html', active='Home', taxonomy_level='Specie',
-                                   taxnomy_group='Sub-PCA', PCA='None')
+                           taxnomy_group='Sub-PCA', PCA='None')
 
 
 @bp.route('/Help')
@@ -105,6 +110,11 @@ def about_page():
 @bp.route('/download-outputs')
 def download():
     return send_file("sampleDir.zip", mimetype='zip', as_attachment=True, )
+
+
+@bp.route('/download-example-files')
+def download_example():
+    return send_file("static/example_input_files.zip", mimetype='zip', as_attachment=True, )
 
 
 def params_dict(taxonomy_level, taxnomy_group, epsilon, z_scoring, pca, comp, normalization, norm_after_rel):
