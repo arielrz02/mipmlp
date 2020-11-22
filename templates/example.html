@@ -27,6 +27,12 @@
      The output plots should look like this:</p>
     <p><img src="static/plots_example1.png" style="width:90%"></p>
     <p><img src="static/plots_example2.png" style="width:90%"></p>
+    <p>Upper left figure is a heatmap of the  correlation between the merged taxonomies.</p>
+    <p>Upper central figure is a heatmap of the  correlation between samples.</p>
+    <p>Upper right figure is a heatmap of the normalized samples.</p>
+    <p>Lower left figure is a histogram of the variance of samples. Samples with very low variance should probably be removed.</p>
+    <p>Lower central figure is a histogram of the total number of reads per sample. Samples with very low total number of reads should probably be removed.</p>
+    <p>Lower right figure only appears when a tag file is given and it represents the correlation between the grouped taxonomies and the tag.</p>
   </header>
 </section>
 {% endblock %}
