@@ -14,6 +14,12 @@ bp = Blueprint('/', __name__, url_prefix='/')
 def home_page():
     error = None
     if request.method == 'POST':
+        try:
+            os.remove("static/Correlation_between_each_component_and_the_labelprognosistask.svg")
+        except:
+            print("")
+        finally:
+            pass
         otu_file = request.files['otu_file']
         tag_file = request.files['tag_file']
         taxonomy_level = request.form['taxonomy_level']
@@ -74,9 +80,8 @@ def home_page():
 
             try:
                 os.remove("TAG.csv")
-                os.remove("static/Correlation_between_each_component_and_the_labelprognosistask.svg")
             except:
-                print("Error")
+                print("")
             finally:
                 pass
 
