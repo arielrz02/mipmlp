@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h1>MIP-MLP</h1>
+  <h1>MIPMLP</h1>
 <section class="content">
   <form method="post"  enctype=multipart/form-data>
     {% macro build_option(name, selected_att) -%}
@@ -13,8 +13,15 @@
     {%- endmacro %}
 
     <div>
-      <label for="otu_file">Select OTU file:</label>
-      <input type=file id="otu_file" name="otu_file" value="{{otu_file}}">
+      <label for="otu_table">Select OTU table:</label>
+      <input type=file id="otu_table" name="otu_table" value="{{otu_table}}">
+    </div>
+
+    <br>
+
+    <div>
+      <label for="taxonomy_file">Select taxonomy file:</label>
+      <input type=file id="taxonomy_file" name="taxonomy_file" value="{{taxonomy_file}}">
     </div>
 
     {% for message in get_flashed_messages() %}
@@ -120,8 +127,24 @@
 
     <br>
 
-    <input type="submit" value="calculate">
+    <input type="submit" value="calculate" onclick="calculating();">
   </form>
+
+
+
+    <p id="txt_mes" ></p>
+
+    <script>
+
+    function calculating() {
+        document.getElementById("txt_mes").innerHTML = "Calculating...";
+    }
+
+    function remove_mes() {
+        document.getElementById("txt_mes").innerHTML = "";
+    }
+
+    </script>
 
   <style>
   * {
@@ -145,7 +168,12 @@
 
 
   {% if images_names is defined %}
-  <br>
+
+      <script>
+      remove_mes()
+      </script>
+
+   <br>
   <button>
     <a href="/download-outputs">download</a>
   </button>

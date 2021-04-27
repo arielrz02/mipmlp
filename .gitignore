@@ -1,3 +1,5 @@
 /.idea/
 /__pycache__/
 /sampleDir.zip
+venv
+.DS_Store

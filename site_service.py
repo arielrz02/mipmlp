@@ -1,7 +1,9 @@
 import os
 import service
+import pandas as pd
 from zipfile import ZipFile
 from os.path import basename
+from biom import load_table
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for, send_file
@@ -20,7 +22,8 @@ def home_page():
             print("")
         finally:
             pass
-        otu_file = request.files['otu_file']
+        otu_table = request.files['otu_table']
+        taxonomy_file = request.files['taxonomy_file']
         tag_file = request.files['tag_file']
         taxonomy_level = request.form['taxonomy_level']
         taxnomy_group = request.form['taxnomy_group']
@@ -30,12 +33,23 @@ def home_page():
         comp = request.form['comp']
         normalization = request.form['normalization']
         norm_after_rel = request.form['norm_after_rel']
-        if not otu_file:
-            error = "OTU File should be provided."
+        if not otu_table:
+            error = "OTU table should be provided."
+        elif not taxonomy_file:
+            error = "Taxnomy file should be provided."
         elif int(comp) == 0:
             error = "The number of components should be -1 or positive integer (not 0)."
         else:
-            otu_file.save("OTU.csv")
+
+            otu_path = "OTU.csv"
+            table_path = "table.biom"
+            taxonomy_path = "taxonomy.tsv"
+
+            otu_table.save(table_path)
+            taxonomy_file.save(taxonomy_path)
+
+            biom_to_otu(biom_path=table_path, taxonomy_path=taxonomy_path, otu_dest_path=otu_path)
+
             tag_flag = True
             if tag_file:
                 tag_flag = False
@@ -59,7 +73,7 @@ def home_page():
                         zipObj.write(filePath, basename(filePath))
                 for folderName, subfolders, filenames in os.walk("static"):
                     for filename in filenames:
-                        if not (filename == "example_input_files.zip" or filename == "Example_input_options.png"
+                        if not (filename == "old_example_input_files.zip" or filename == "old_Example_input_options.png"
                                 or filename == "plots_example1.png" or filename == "plots_example2.png"):
                             # create complete filepath of file in directory
                             filePath = os.path.join(folderName, filename)
@@ -89,7 +103,7 @@ def home_page():
 
         flash(error)
         if not error:
-            return render_template('home.html', active='Home', otu_file=otu_file, tag_file=tag_file,
+            return render_template('home.html', active='Home', otu_table=otu_table, tag_file=tag_file,
                                    taxonomy_level=taxonomy_level,
                                    taxnomy_group=taxnomy_group, epsilon=epsilon, z_scoring=z_scoring, PCA=PCA,
                                    normalization=normalization,
@@ -98,6 +112,19 @@ def home_page():
 
     return render_template('home.html', active='Home', taxonomy_level='Specie',
                            taxnomy_group='Sub-PCA', PCA='None')
+
+
+def biom_to_otu(biom_path, taxonomy_path, otu_dest_path, **kwargs):
+    # Load the biom table and rename index.
+    otu_table = load_table(biom_path).to_dataframe(True)
+    # Load the taxonomy file and extract the taxonomy column.
+    taxonomy = pd.read_csv(taxonomy_path, index_col=0, sep=None, **kwargs).drop('Confidence', axis=1,
+                                                                                     errors='ignore')
+    otu_table = pd.merge(otu_table, taxonomy, right_index=True, left_index=True)
+    otu_table.rename({'Taxon': 'taxonomy'}, inplace=True, axis=1)
+    otu_table = otu_table.transpose()
+    otu_table.index.name = 'ID'
+    otu_table.to_csv(otu_dest_path)
 
 
 @bp.route('/Help')
