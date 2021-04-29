@@ -11,13 +11,15 @@ from flask import (
 
 bp = Blueprint('/', __name__, url_prefix='/')
 
+APP_PATH = 'app'
+STATIC_PATH = 'static/'
 
 @bp.route('/Home', methods=('GET', 'POST'))
 def home_page():
     error = None
     if request.method == 'POST':
         try:
-            os.remove("static/Correlation_between_each_component_and_the_labelprognosistask.svg")
+            os.remove(STATIC_PATH + "Correlation_between_each_component_and_the_labelprognosistask.svg")
         except:
             print("")
         finally:
@@ -41,9 +43,9 @@ def home_page():
             error = "The number of components should be -1 or positive integer (not 0)."
         else:
 
-            otu_path = "OTU.csv"
             table_path = "table.biom"
             taxonomy_path = "taxonomy.tsv"
+            otu_path = "OTU.csv"
 
             otu_table.save(table_path)
             taxonomy_file.save(taxonomy_path)
@@ -57,10 +59,7 @@ def home_page():
             params = params_dict(taxonomy_level, taxnomy_group, epsilon, z_scoring, PCA, int(comp), normalization,
                                  norm_after_rel)
 
-
             service.evaluate(params, tag_flag)
-
-
 
             # create a ZipFile object
             with ZipFile('sampleDir.zip', 'w') as zipObj:
@@ -71,7 +70,7 @@ def home_page():
                         filePath = os.path.join(folderName, filename)
                         # Add file to zip
                         zipObj.write(filePath, basename(filePath))
-                for folderName, subfolders, filenames in os.walk("static"):
+                for folderName, subfolders, filenames in os.walk(STATIC_PATH):
                     for filename in filenames:
                         if not (filename == "old_example_input_files.zip" or filename == "old_Example_input_options.png"
                                 or filename == "plots_example1.png" or filename == "plots_example2.png"):
@@ -81,16 +80,16 @@ def home_page():
                             zipObj.write(filePath, basename(filePath))
 
             images_names = [
-                'static/correlation_heatmap_bacteria.png',
-                'static/correlation_heatmap_patient.png',
-                'static/standard_heatmap.png',
-                'static/samples_variance.svg',
-                'static/density_of_samples.svg'
+                STATIC_PATH + 'correlation_heatmap_bacteria.png',
+                STATIC_PATH + 'correlation_heatmap_patient.png',
+                STATIC_PATH + 'standard_heatmap.png',
+                STATIC_PATH + 'samples_variance.svg',
+                STATIC_PATH + 'density_of_samples.svg'
 
             ]
 
             if not tag_flag:
-                images_names.append('static/Correlation_between_each_component_and_the_labelprognosistask.svg')
+                images_names.append(STATIC_PATH + 'Correlation_between_each_component_and_the_labelprognosistask.svg')
 
             try:
                 os.remove("TAG.csv")
@@ -118,8 +117,7 @@ def biom_to_otu(biom_path, taxonomy_path, otu_dest_path, **kwargs):
     # Load the biom table and rename index.
     otu_table = load_table(biom_path).to_dataframe(True)
     # Load the taxonomy file and extract the taxonomy column.
-    taxonomy = pd.read_csv(taxonomy_path, index_col=0, sep=None, **kwargs).drop('Confidence', axis=1,
-                                                                                     errors='ignore')
+    taxonomy = pd.read_csv(taxonomy_path, index_col=0, sep='\t', **kwargs).drop('Confidence', axis=1)
     otu_table = pd.merge(otu_table, taxonomy, right_index=True, left_index=True)
     otu_table.rename({'Taxon': 'taxonomy'}, inplace=True, axis=1)
     otu_table = otu_table.transpose()
@@ -149,7 +147,7 @@ def download():
 
 @bp.route('/download-example-files')
 def download_example():
-    return send_file("static/example_input_files.zip", mimetype='zip', as_attachment=True, )
+    return send_file(STATIC_PATH + "example_input_files.zip", mimetype='zip', as_attachment=True, )
 
 
 def params_dict(taxonomy_level, taxnomy_group, epsilon, z_scoring, pca, comp, normalization, norm_after_rel):
