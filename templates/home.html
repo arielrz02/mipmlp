@@ -3,7 +3,7 @@
 {% block content %}
   <h1>MIPMLP</h1>
 <section class="content">
-  <form method="post"  enctype=multipart/form-data>
+  <form method="post"  enctype=multipart/form-data class="">
     {% macro build_option(name, selected_att) -%}
     {% if name == selected_att %}
       <option value="{{ name }}" selected="selected">{{name}}</option>

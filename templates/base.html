@@ -37,6 +37,8 @@ li a:hover:not(.active) {
   background-color: #000070;
   color: #E5E5E5;
 }
+
+
 </style>
 </head>
 <body>
@@ -65,10 +67,15 @@ li a:hover:not(.active) {
 </ul>
 
 </body>
+
 </nav>
+
+
+
+
 <section class="content">
   <header>
     {% block header %}{% endblock %}
   </header>
-  {% block content %}{% endblock %}
+    {% block content %}{% endblock %}
 </section>
