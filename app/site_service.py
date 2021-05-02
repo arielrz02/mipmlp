@@ -24,6 +24,7 @@ def home_page():
             print("")
         finally:
             pass
+        otu_csv = request.files['otu_csv']
         otu_table = request.files['otu_table']
         taxonomy_file = request.files['taxonomy_file']
         tag_file = request.files['tag_file']
@@ -35,11 +36,18 @@ def home_page():
         comp = request.form['comp']
         normalization = request.form['normalization']
         norm_after_rel = request.form['norm_after_rel']
-        if not otu_table:
-            error = "OTU table should be provided."
-        elif not taxonomy_file:
-            error = "Taxnomy file should be provided."
-        elif int(comp) == 0:
+
+        if not otu_csv and not otu_table and not taxonomy_file:
+            error = "Input files are missing."
+        if not otu_csv:
+            if not otu_table:
+                error = "OTU table is missing."
+            elif not taxonomy_file:
+                error = "Taxnomy file is missing."
+        if not otu_table and not taxonomy_file:
+            if not otu_csv:
+                error = "OTU csv is missing."
+        if int(comp) == 0:
             error = "The number of components should be -1 or positive integer (not 0)."
         else:
 
@@ -47,10 +55,12 @@ def home_page():
             taxonomy_path = "taxonomy.tsv"
             otu_path = "OTU.csv"
 
-            otu_table.save(table_path)
-            taxonomy_file.save(taxonomy_path)
-
-            biom_to_otu(biom_path=table_path, taxonomy_path=taxonomy_path, otu_dest_path=otu_path)
+            if otu_csv:
+                otu_csv.save(otu_path)
+            else:
+                otu_table.save(table_path)
+                taxonomy_file.save(taxonomy_path)
+                biom_to_otu(biom_path=table_path, taxonomy_path=taxonomy_path, otu_dest_path=otu_path)
 
             tag_flag = True
             if tag_file:
@@ -99,8 +109,8 @@ def home_page():
                 pass
 
         # input validation
-
-        flash(error)
+        if error:
+            flash(error)
         if not error:
             return render_template('home.html', active='Home', otu_table=otu_table, tag_file=tag_file,
                                    taxonomy_level=taxonomy_level,

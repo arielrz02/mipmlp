@@ -12,25 +12,58 @@
     {% endif %}
     {%- endmacro %}
 
-    <div>
+    <script>
+
+    function input_format_manager(biom) {
+        const otu_table = document.getElementById("otu_table_div");
+        const taxonomy = document.getElementById("taxonomy_file_div");
+        const otu_csv = document.getElementById("otu_csv_div");
+
+        if (! biom) {
+            document.getElementById("biom_button").style.backgroundColor='#FFFFFF'
+            document.getElementById("csv_button").style.backgroundColor='#D4F9FF'
+            otu_table.style.display = "none";
+            taxonomy.style.display = "none";
+            otu_csv.style.display = "block";
+        } else {
+            document.getElementById("biom_button").style.background='#D4F9FF'
+            document.getElementById("csv_button").style.background='#FFFFFF'
+            otu_table.style.display = "block";
+            taxonomy.style.display = "block";
+            otu_csv.style.display = "none";
+        }
+    }
+
+    </script>
+
+    <button id="biom_button" type="button" onclick="input_format_manager(true)">otu.biom and taxonomy.tsv</button>
+      <button id="csv_button" type="button" onclick="input_format_manager(false)">otu.csv with taxonomy included</button>
+
+    <br>
+
+    <br>
+
+    <div id="otu_csv_div">
+      <label for="otu_csv">Select OTU csv:</label>
+      <input type=file id="otu_csv" name="otu_csv" value="{{otu_csv}}">
+      <br><br>
+    </div>
+
+    <div id="otu_table_div">
       <label for="otu_table">Select OTU table:</label>
       <input type=file id="otu_table" name="otu_table" value="{{otu_table}}">
+        <br><br>
     </div>
 
-    <br>
-
-    <div>
+    <div id="taxonomy_file_div">
       <label for="taxonomy_file">Select taxonomy file:</label>
       <input type=file id="taxonomy_file" name="taxonomy_file" value="{{taxonomy_file}}">
+        <br><br>
     </div>
 
-    {% for message in get_flashed_messages() %}
-    {% if message == "OTU File should be provided." %}
-    <p style="color: red">{{ message }}</p>
-    {% endif %}
-    {% endfor %}
-
-    <br>
+    <script>
+        input_format_manager(true)
+    </script>
 
     <div>
       <label for="tag_file">Select Tag file:</label>
@@ -99,12 +132,6 @@
       <input type="number" id="comp" name="comp" min="-1" step="1" value="{{comp}}" required>
     </div>
 
-    {% for message in get_flashed_messages() %}
-    {% if message == "The number of components should be -1 or positive integer (not 0)." %}
-    <p style="color: red">{{ message }}</p>
-    {% endif %}
-    {% endfor %}
-
     <br>
 
     <div>
@@ -130,7 +157,11 @@
     <input type="submit" value="calculate" onclick="calculating();">
   </form>
 
-
+    {% for message in get_flashed_messages() %}
+{#    {% if message == "The number of components should be -1 or positive integer (not 0)." %}#}
+    <p style="color: red">{{ message }}</p>
+{#    {% endif %}#}
+    {% endfor %}
 
     <p id="txt_mes" ></p>
 
